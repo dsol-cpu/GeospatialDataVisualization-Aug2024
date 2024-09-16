@@ -6,7 +6,6 @@ using UnityEngine.Jobs;
 using Unity.Burst;
 using UnityEngine.UI;
 using TMPro;
-using UnityEditorInternal;
 
 namespace Assets.Scripts
 {
@@ -145,7 +144,7 @@ namespace Assets.Scripts
                     }
                     else
                     {
-                        uiTextDisplay.text = "";
+                        uiTextDisplay.text = "Hover over a Location";
                         lastActiveIndex = -1;
                     }
                 }
@@ -154,7 +153,7 @@ namespace Assets.Scripts
                     // Reset UI if no hit
                     if (lastActiveIndex != -1)
                     {
-                        uiTextDisplay.text = "";
+                        uiTextDisplay.text = "Hover over a Location";
                         lastActiveIndex = -1;
                     }
                 }
