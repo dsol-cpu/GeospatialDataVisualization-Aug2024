@@ -77,6 +77,7 @@ namespace Assets.Scripts
 
                 GameObject pin = Instantiate(pinObject, position, UnityEngine.Quaternion.identity);
                 pinTransforms[i] = pin.transform;
+                pin.transform.SetParent(referenceGlobeTransform);
             }
             pinLocalPositions = new NativeArray<Vector3>(count, Allocator.Persistent);
             pinPositions = new NativeArray<Vector3>(count, Allocator.Persistent);
@@ -201,7 +202,7 @@ namespace Assets.Scripts
                 Quaternion lookAtRotation = Quaternion.LookRotation(directionToCenter, Vector3.up);
 
                 // Store the updated rotation
-                transform.position = worldPosition;
+                // transform.position = worldPosition;
                 transform.rotation = lookAtRotation;
             }
         }
