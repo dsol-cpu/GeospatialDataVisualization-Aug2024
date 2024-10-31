@@ -3,6 +3,10 @@ This was a code challenge project done for AES in order to:
 * Map them to a globe
 * Represent them in an interesting way
 
+Solution:
+* I decided to parse with a regex to catch all cases in the dirty JSON
+* used Unity Jobs to render and dynamically rotate all pins on the globe
+
 Tools used: Unity, C#, Blender
 
 Video:
