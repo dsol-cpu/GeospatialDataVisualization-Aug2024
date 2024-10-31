@@ -1,0 +1,183 @@
+Washington, DC
+38.892472256951756, -77.0347816630324
+New York City
+40.72088370861154, -74.00867460394531
+Khartoum, Sudan
+15.534227790561584, 32.60901143470265
+Paris, France
+48.8529787081185, 2.3928512528404555
+Santiago, Chile
+-33.43139726763448, -70.68784489114582
+Anchorage, Alaska
+61.263038684580025, -149.84754662236512
+Perth, Australia
+-31.953489438166365, 115.85784398144698
+Mandalay, Myanmar
+21.989700210361978, 96.0606106842968,
+Bucharest, Romania
+44.431993052208895, 26.150134573161157
+Cape Town, South Africa
+-33.90841410059036, 18.437964669645446
+Tokyo, Japan
+35.6895, 139.6917
+Rome, Italy
+41.9028, 12.4964
+Cairo, Egypt
+30.0444, 31.2357
+Toronto, Canada
+43.6532, -79.3832
+Buenos Aires, Argentina
+-34.6118, -58.4173
+Seoul, South Korea
+37.5665, 126.9780
+Mexico City, Mexico
+19.4326, -99.1332
+Nairobi, Kenya
+-1.286389, 36.817223
+Vancouver, Canada
+49.2827, -123.1207
+Mumbai, India
+19.0760, 72.8777
+New York City, USA
+40.7209, -74.0060
+London, United Kingdom
+51.5074, -0.1278
+Sydney, Australia
+-33.8688, 151.2093
+Rio de Janeiro, Brazil
+-22.9068, -43.1729
+Moscow, Russia
+55.7558, 37.6176
+Cape Town, South Africa
+-33.9180, 18.4233
+北京,China
+39.9042, 116.4074
+Paris, France
+48.8529787081185, 2.3928512528404555
+Santiago, Chile
+-33.43139726763448, -70.68784489114582
+Anchorage, Alaska
+-61.263038684580025, -149.84754662236512
+Perth, Australia
+-31.953489438166365, 115.85784398144698
+Mandalay, Myanmar
+21.989700210361978, 96.0606106842968
+Bucharest, Romania
+44.431993052208895, 26.150134573161157
+Istanbul, Turkey
+41.0082,28.9784
+Bogotá, Colombia
+4.7110, -74.0721
+"Vancouver, Canada"
+49.2827, -123.1207
+Lima, Peru
+-12.0464, -77.0428
+Los Angeles, USA
+34.0522, -118.2437
+Johannesburg, South Africa
+-26.2041, 28.0473
+Bangkok, Thailand
+13.7563, 100.5018
+Warsaw, Poland
+52.2297, 21.0122
+Houston, USA
+29.7604, -95.3698
+,,,,,,
+Frankfurt, Germany
+50.1109, 8.6821
+Baghdad, Iraq
+33.3152, 44.3661
+Kuala Lumpur, Malaysia
+3.1390, 101.6869
+Dublin, Ireland
+53.3498, -6.2603
+Oslo, Norway
+59.9139,10.7522
+Singapore City, Singapore
+1.3521, 103.8198
+San Francisco, USA
+37.7749, -122.4194,
+Buenos Aires, Argentina
+-34.6118, -58.4173
+Amsterdam, Netherlands
+52.3676, 4.9041
+Barcelona, Spain
+41.3851, 2.1734
+Vienna, Austria
+48.8566, 16.3666
+Helsinki, Finland
+Helsinki, Finland
+60.1695, 24.9354
+Prague, Czech Republic
+50.0755, 14.4378
+Reykjavik, Iceland
+64.1466, -21.9426
+Cape Town, South Africa
+-33.908414100590375438946764558676, 18.4379646696457895436788678678446
+Oslo, Norway
+59.9139, 10.7522
+Munich, Germany
+48.1351, 11.5820
+Zurich, Switzerland
+47.3769, 8.5417
+Montreal,Canada
+45.5017, -73.5673
+Sydney, Australia
+-33.8688, 151.2093
+Melbourne Australia
+-37.8136, 144.9631
+Rio de Janeiro, Brazil
+-22.9068, -43.1729
+São Paulo, Brazil
+-23.5505, -46.6333
+Mexico City, Mexico
+19.4326, -99.1332
+Johannesburg, South Africa
+-26.2041, 28.0473
+Istanbul, Turkey
+41.0082, 28.9784
+Mumbai,India
+19.0760,72.8777
+Manila, Philippines
+13.41, 122.56
+Shanghai, China
+31.2304, 121.4737
+Tokyo, Japan
+35.6895, 139.6917
+Seoul, South Korea
+37.5665, 126.9780
+Beijing,China,
+39.9042,116.4074,
+Hong Kong, China
+22.3964, 114.1095
+`Singapore City`, Singapore
+1.3521, 103.8198
+Jakarta, Indonesia
+-6.2088, 106.8456
+Bangkok, Thailand
+13.7563, 100.5018
+Hanoi, Vietnam
++21.0285, +105.8542
+Sydney, Australia
+-33.8688, 151.2093
+Auckland, "New Zealand"
+-36.8485, 174.7633
+Wellington, 'New Zealand'`
+-41.2866, 174.7762
+Honolulu, Hawaii
+21.3069, -157.8583
+Los Angeles, USA
+34.0522, -118.2437
+San Francisco, USA
+37.7749, -122.4194
+Seattle, USA
+47.6062, -122.3321
+47.6062, -122.3321
+Vancouver, Canada
+49.2827, -123.1207
+Denver, USA
+99.7392, -104.9903
+Chicago, USA
+41.8781, -87.6298
+Toronto, Canada
+43.6532, -79.3832

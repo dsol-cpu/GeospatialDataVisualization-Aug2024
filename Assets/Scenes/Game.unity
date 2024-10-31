@@ -888,7 +888,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7fe7bf9d035cddea9677d972256d603, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dataFilePath: StreamingAssets/questions.txt
+  dataFilePath: questions
   pinGameObject: {fileID: 5750570703313814486}
 --- !u!1 &1782280483
 GameObject:

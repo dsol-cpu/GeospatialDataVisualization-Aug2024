@@ -1,11 +1,10 @@
-using System.Collections.Generic;
-using Unity.Collections;
-using Unity.Jobs;
-using UnityEngine;
 using UnityEngine.Jobs;
 using Unity.Burst;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine;
+using Unity.Collections;
+using Unity.Jobs;
+using System.Collections.Generic;
 
 namespace Assets.Scripts
 {
@@ -16,17 +15,16 @@ namespace Assets.Scripts
         [SerializeField] Transform referenceGlobeTransform;
         [SerializeField] Transform referenceCameraTransform;
         [SerializeField] TMP_Text uiTextDisplay;
+
         private Location[] locationList;
         private TransformAccessArray pinTransformsArray;
         private NativeArray<Vector3> pinLocalPositions;
         private NativeArray<Vector3> pinPositions;
         private NativeArray<Quaternion> pinRotations;
         private Quaternion previousRotation;
-
         private Vector3 previousMousePosition;
         [SerializeField] private int lastActiveIndex = -1;
 
-        private bool matchFound;
         private JobHandle jobHandle;
         private static InstancePinMeshManager _instance;
 
@@ -34,12 +32,9 @@ namespace Assets.Scripts
         {
             get
             {
-                // If instance is null, find it in the scene
                 if (_instance == null)
                 {
                     _instance = FindObjectOfType<InstancePinMeshManager>();
-
-                    // If not found, create a new instance
                     if (_instance == null)
                     {
                         GameObject singleton = new GameObject("InstancePinMeshManager");
@@ -63,22 +58,17 @@ namespace Assets.Scripts
                 return;
             }
             locationList = locationsl.ToArray();
-
-            if (!pinObject.activeSelf)
-                pinObject.SetActive(true);
-
             Transform[] pinTransforms = new Transform[count];
 
-            //instantiate the pins
             for (int i = 0; i < count; ++i)
             {
-                UnityEngine.Vector3 position = V360_Utilities.LLAToXYZ((float)locationsl[i].Latitude, (float)locationsl[i].Longitude);
-                position = position.normalized * (position.magnitude + pinObject.transform.position.y); // Apply offset
-
-                GameObject pin = Instantiate(pinObject, position, UnityEngine.Quaternion.identity);
+                Vector3 position = V360_Utilities.LLAToXYZ((float)locationsl[i].Latitude, (float)locationsl[i].Longitude);
+                position = position.normalized * (position.magnitude + pinObject.transform.position.y);
+                GameObject pin = Instantiate(pinObject, position, Quaternion.identity);
                 pinTransforms[i] = pin.transform;
                 pin.transform.SetParent(referenceGlobeTransform);
             }
+
             pinLocalPositions = new NativeArray<Vector3>(count, Allocator.Persistent);
             pinPositions = new NativeArray<Vector3>(count, Allocator.Persistent);
             pinRotations = new NativeArray<Quaternion>(count, Allocator.Persistent);
@@ -89,22 +79,15 @@ namespace Assets.Scripts
             }
 
             pinTransformsArray = new TransformAccessArray(pinTransforms);
-
             pinObject.SetActive(false);
-        }
-
-        private static void ScalePin(Transform pin, float scaleFactor)
-        {
-            pin.localScale *= scaleFactor;
         }
 
         void Update()
         {
-            // Check for mouse position change
             if (previousMousePosition != Input.mousePosition)
             {
                 previousMousePosition = Input.mousePosition;
-                // Always schedule the job to update transforms
+
                 UpdateTransformsJob job = new UpdateTransformsJob
                 {
                     referencePosition = referenceGlobeTransform.position,
@@ -115,29 +98,20 @@ namespace Assets.Scripts
                 };
                 jobHandle = job.Schedule(pinTransformsArray);
 
-                // Check for raycast hit
-                if (Physics.Raycast(Camera.main.ScreenPointToRay(previousMousePosition), out RaycastHit hit))
+                if (Camera.main != null && Physics.Raycast(Camera.main.ScreenPointToRay(previousMousePosition), out RaycastHit hit))
                 {
                     Transform hitTransform = hit.transform;
-                    Debug.Log($"Trying at index: {lastActiveIndex}");
-
-                    // Find the index of the hitTransform in the pinTransformsArray
                     int hoveredIndex = -1;
 
-                    if (hitTransform.position != referenceGlobeTransform.position)
+                    for (int i = 0; i < pinTransformsArray.length; i++)
                     {
-                        for (int i = 0; i < pinTransformsArray.length; i++)
+                        if (pinTransformsArray[i].Equals(hitTransform))
                         {
-                            if (pinTransformsArray[i].Equals(hitTransform))
-                            {
-                                Debug.Log("Found!");
-                                hoveredIndex = i;
-                                break;
-                            }
+                            hoveredIndex = i;
+                            break;
                         }
                     }
 
-                    // Update UI based on the hoveredIndex
                     if (hoveredIndex != -1)
                     {
                         uiTextDisplay.text = locationList[hoveredIndex].ToString();
@@ -149,25 +123,14 @@ namespace Assets.Scripts
                         lastActiveIndex = -1;
                     }
                 }
-                else
+                else if (lastActiveIndex != -1)
                 {
-                    // Reset UI if no hit
-                    if (lastActiveIndex != -1)
-                    {
-                        uiTextDisplay.text = "Hover over a Location";
-                        lastActiveIndex = -1;
-                    }
+                    uiTextDisplay.text = "Hover over a Location";
+                    lastActiveIndex = -1;
                 }
             }
-            // Ensure job is completed if needed before further processing
-            // This depends on when and how you need the job results
         }
 
-
-        /// <summary>
-        /// LateUpdate is called every frame, if the Behaviour is enabled.
-        /// It is called after all Update functions have been called.
-        /// </summary>
         void LateUpdate()
         {
             jobHandle.Complete();
@@ -178,10 +141,9 @@ namespace Assets.Scripts
             if (pinLocalPositions.IsCreated) pinLocalPositions.Dispose();
             if (pinPositions.IsCreated) pinPositions.Dispose();
             if (pinRotations.IsCreated) pinRotations.Dispose();
+            if (pinTransformsArray.isCreated) pinTransformsArray.Dispose();
         }
 
-
-        // Job to update the pin rotations
         [BurstCompile]
         private struct UpdateTransformsJob : IJobParallelForTransform
         {
@@ -194,15 +156,10 @@ namespace Assets.Scripts
 
             public void Execute(int index, TransformAccess transform)
             {
-                // Calculate the new world position of the pin
                 Vector3 worldPosition = referenceRotation * localPositions[index] + referencePosition;
-
                 Vector3 directionToCenter = referencePosition - worldPosition;
-                // Calculate the rotation so the pin points towards the center of the globe
                 Quaternion lookAtRotation = Quaternion.LookRotation(directionToCenter, Vector3.up);
 
-                // Store the updated rotation
-                // transform.position = worldPosition;
                 transform.rotation = lookAtRotation;
             }
         }
