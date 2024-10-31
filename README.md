@@ -6,4 +6,4 @@ This was a code challenge project done for AES in order to:
 Tools used: Unity, C#, Blender
 
 Video:
-[![](http://img.youtube.com/vi/coCoAvOaSBM/0.jpg)](http://www.youtube.com/watch?v=coCoAvOaSBM&feature=emb_title)
+[![](http://img.youtube.com/vi/coCoAvOaSBM/maxresdefault.webp)](http://www.youtube.com/watch?v=coCoAvOaSBM&feature=emb_title)
