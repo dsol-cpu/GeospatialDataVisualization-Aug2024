@@ -35,88 +35,77 @@ jobs:
             Library-WebGL-
             Library-
 
+      # Modify Unity build parameters to handle compression differently
       - name: Build WebGL
         uses: game-ci/unity-builder@v4
         with:
           targetPlatform: WebGL
           buildName: Build
           versioning: Semantic
+          customParameters: >-
+            -quit 
+            -batchmode 
+            -nographics 
+            -WebGLCompressionFormat Disabled
 
-      # Ensure directories exist and set permissions
-      - name: Create and prepare directories
+      # Create a custom configuration file in the Unity template directory
+      - name: Add compression handling
+        working-directory: build/WebGL/Build
         run: |
-          mkdir -p build/WebGL/Build
-          chmod -R 755 build
+          # Create .nojekyll file to prevent GitHub Pages from ignoring files that begin with an underscore
+          touch .nojekyll
 
-      # Create server configurations with proper permissions
-      - name: Create server configurations
+          # Create headers.json for GitHub Pages
+          cat > _headers << EOF
+          /*
+            Content-Encoding: gzip
+          /*.gz
+            Content-Type: application/javascript
+            Content-Encoding: gzip
+          EOF
+
+      # Modify the existing index.html to handle compression correctly
+      - name: Update index.html
+        working-directory: build/WebGL/Build
         run: |
-          # Create web.config
-          echo '<?xml version="1.0" encoding="UTF-8"?>
-          <configuration>
-            <system.webServer>
-              <staticContent>
-                <mimeMap fileExtension=".unityweb" mimeType="application/octet-stream" />
-                <mimeMap fileExtension=".gz" mimeType="application/gzip" />
-              </staticContent>
-              <rewrite>
-                <rules>
-                  <rule name="Serve gzip files" stopProcessing="true">
-                    <match url=".(js|data|symbols|unityweb)\.gz$" />
-                    <action type="Rewrite" url="{R:0}" />
-                    <serverVariables>
-                      <set name="RESPONSE_Content-Encoding" value="gzip" />
-                      <set name="RESPONSE_Content-Type" value="application/javascript" />
-                    </serverVariables>
-                  </rule>
-                </rules>
-              </rewrite>
-            </system.webServer>
-          </configuration>' > build/WebGL/Build/web.config
-
-          # Create .htaccess
-          echo 'AddEncoding gzip .gz
-          AddType application/gzip .gz
-
-          RewriteEngine On
-          RewriteCond %{REQUEST_FILENAME} \.(js|data|symbols|unityweb)\.gz$
-          RewriteRule .* - [E=CONTENT_ENCODING:gzip]
-          RewriteRule .* - [E=CONTENT_TYPE:application/javascript]
-
-          <FilesMatch "\.gz$">
-            Header set Content-Encoding "gzip"
-            Header set Content-Type "application/javascript"
-          </FilesMatch>' > build/WebGL/Build/.htaccess
-
-          # Create custom index.html
-          echo '<!DOCTYPE html>
+          # Create a temporary file with the new content
+          cat > index.html.new << EOF
+          <!DOCTYPE html>
           <html lang="en-us">
             <head>
               <meta charset="utf-8">
               <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
               <title>Unity WebGL Player</title>
+              <script>
+                // Handle gzipped files
+                window.unityInstance = null;
+                function handleGzipFiles() {
+                  return createUnityInstance(document.querySelector("#unity-canvas"), {
+                    dataUrl: "Build.data",
+                    frameworkUrl: "Build.framework.js",
+                    codeUrl: "Build.wasm",
+                    streamingAssetsUrl: "StreamingAssets",
+                    companyName: "DefaultCompany",
+                    productName: "WebGL Build",
+                    productVersion: "0.1",
+                  }).then((instance) => {
+                    window.unityInstance = instance;
+                  });
+                }
+              </script>
             </head>
-            <body style="margin: 0px; overflow: hidden;">
-              <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #231F20"></canvas>
+            <body style="margin: 0; padding: 0; overflow: hidden;">
+              <canvas id="unity-canvas" style="width: 100vw; height: 100vh; background: #231F20"></canvas>
               <script src="Build.loader.js"></script>
               <script>
-                createUnityInstance(document.querySelector("#unity-canvas"), {
-                  dataUrl: "Build.data.gz",
-                  frameworkUrl: "Build.framework.js.gz",
-                  codeUrl: "Build.wasm.gz",
-                  streamingAssetsUrl: "StreamingAssets",
-                  companyName: "DefaultCompany",
-                  productName: "WebGL Build",
-                  productVersion: "0.1",
-                });
+                document.addEventListener("DOMContentLoaded", handleGzipFiles);
               </script>
             </body>
-          </html>' > build/WebGL/Build/index.html
+          </html>
+          EOF
 
-          # Set proper permissions for all created files
-          chmod 644 build/WebGL/Build/web.config
-          chmod 644 build/WebGL/Build/.htaccess
-          chmod 644 build/WebGL/Build/index.html
+          # Replace the existing index.html with the new version
+          mv index.html.new index.html
 
       - name: List build directory
         run: |
