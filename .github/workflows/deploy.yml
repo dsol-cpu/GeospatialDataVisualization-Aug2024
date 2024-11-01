@@ -7,39 +7,40 @@ on:
 
 jobs:
   build:
-    name: Build Unity project for WebGL
+    name: Build Unity Project
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Cache
+        uses: actions/checkout@v4
+
+      - name: Cache Library folder
         uses: actions/cache@v3
         with:
           path: Library
           key: Library-WebGL
-          restore-keys: Library-
-      - name: Build project
-        uses: game-ci/unity-builder@v2
+          restore-keys: |
+            Library-
+      - name: Unity - Builder
+        uses: game-ci/unity-builder@v4
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
-      - name: Set up GitHub Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: build/WebGL/WebGL
-          retention-days: 1
+          buildName: Build
+          buildsPath: build
+          customParameters: "-webGLCompressionFormat 2"
 
-  publish:
-    name: Publish project to GitHub Pages
-    runs-on: ubuntu-latest
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/WebGL/Build
+
+  deploy:
     needs: build
+    runs-on: ubuntu-latest
     permissions:
-      contents: read
       pages: write
       id-token: write
     environment:
@@ -47,4 +48,5 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v1
+        id: deployment
+        uses: actions/deploy-pages@v4
