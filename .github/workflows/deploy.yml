@@ -30,7 +30,6 @@ jobs:
           targetPlatform: WebGL
           buildName: Build
           buildsPath: build
-          customParameters: "-webGLCompressionFormat 2"
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
