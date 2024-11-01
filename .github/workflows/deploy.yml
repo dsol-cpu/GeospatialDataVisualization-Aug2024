@@ -41,30 +41,37 @@ jobs:
           buildName: Build
           versioning: Semantic
 
+      - name: List build directory
+        run: |
+          echo "Build directory contents:"
+          ls -R build/
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
         with:
           name: Build-WebGL
-          path: build
+          path: build/WebGL
 
   deploy:
     needs: build
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: Build-WebGL
           path: dist
 
+      - name: List downloaded artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -R dist/
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist
+          folder: dist/Build
           branch: gh-pages
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
