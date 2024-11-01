@@ -6,11 +6,6 @@ on:
       - main
   workflow_dispatch:
 
-env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-
 jobs:
   build:
     name: Build Unity Project
@@ -27,23 +22,29 @@ jobs:
         uses: actions/cache@v3
         with:
           path: Library
-          key: Library-WebGL
+          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
+            Library-WebGL-
             Library-
 
       # Build WebGL
-      - name: Unity - Builder
+      - name: Unity - Build WebGL
         uses: game-ci/unity-builder@v3
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
           unityVersion: 2021.3.23f1
-          buildsPath: build
           buildName: WebGL
+          buildsPath: Build
           allowDirtyBuild: true
 
-      # Deploy to GitHub Pages
+      # Deploy the entire WebGL build folder
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build/WebGL
+          folder: Build/WebGL # This should contain index.html and all other build files
           branch: gh-pages
+          clean: true # Automatically remove deleted files from the deploy branch
