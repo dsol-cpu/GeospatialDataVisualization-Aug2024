@@ -10,28 +10,14 @@ jobs:
     name: Build Unity Project
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Cache Library folder
-        uses: actions/cache@v3
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v3
         with:
-          path: Library
-          key: Library-WebGL
-          restore-keys: |
-            Library-
-
-      - name: Unity - Builder
-        uses: game-ci/unity-builder@v4
-        env:
-          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-        with:
-          targetPlatform: WebGL
-          buildName: Build
-          buildsPath: build
-
+          path: |
+            Library/ScriptAssemblies
+            Library/shadercache
+          key: ${{ runner.os }}-unity-cache-${{ hashFiles('Packages.lock.json') }}
+      - uses: game-ci/unity-builder@v4
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
         with:
