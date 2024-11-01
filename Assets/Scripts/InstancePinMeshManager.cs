@@ -79,7 +79,7 @@ namespace Assets.Scripts
             }
 
             pinTransformsArray = new TransformAccessArray(pinTransforms);
-            pinObject.SetActive(false);
+            // pinObject.SetActive(false);
         }
 
         void Update()
