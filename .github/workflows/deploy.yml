@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Build-WebGL
-          path: build/WebGL/Build
+          path: build
 
   deploy:
     needs: build
@@ -59,12 +59,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Build-WebGL
-          path: build
+          path: dist
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: build
+          folder: dist
           branch: gh-pages
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
