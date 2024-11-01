@@ -32,6 +32,8 @@ jobs:
           buildsPath: build
           # Enable decompression fallback
           decompressionFallback: true
+          # Disable compression
+          compressionFormat: Disabled
 
       - name: Upload Build Artifact
         uses: actions/upload-pages-artifact@v3
