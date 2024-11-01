@@ -51,27 +51,39 @@ jobs:
         with:
           name: Build-WebGL
           path: build/WebGL
+          retention-days: 1
 
   deploy:
     needs: build
     name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
+    concurrency: ci-${{ github.ref }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
       - name: Download build artifacts
         uses: actions/download-artifact@v3
         with:
           name: Build-WebGL
-          path: dist
+          path: build
 
       - name: List downloaded artifacts
         run: |
           echo "Downloaded artifacts:"
-          ls -R dist/
+          ls -R build/
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4
         with:
-          folder: dist/Build
+          folder: build/Build
           branch: gh-pages
           clean: true
           token: ${{ secrets.GITHUB_TOKEN }}
+          git-config-name: github-actions[bot]
+          git-config-email: github-actions[bot]@users.noreply.github.com
