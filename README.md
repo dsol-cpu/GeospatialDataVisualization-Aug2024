@@ -7,6 +7,10 @@ Solution:
 * I decided to parse with a regex to catch all cases in the dirty JSON
 * used Unity Jobs and the Burst compiler to render and dynamically rotate all pins on the globe
 
+After the fact:
+* I added an automatic CI/CD pipeline to build the game in WebGL and deploy the game on github pages (Website linked!)
+* https://dsol-cpu.github.io/GeospatialDataVisualization-Aug2024/
+
 Tools used: Unity, C#, Blender
 
 Video:
