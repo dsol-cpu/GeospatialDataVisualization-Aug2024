@@ -1,147 +1,52 @@
-name: Build and Deploy WebGL
+name: Deploy Unity WebGL to GitHub Pages
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
   workflow_dispatch:
-
-env:
-  UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
-  UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
-  UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
 
 jobs:
   build:
-    name: Build Unity WebGL
+    name: Build Unity Project
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          lfs: true
 
       - name: Cache Library folder
         uses: actions/cache@v3
         with:
           path: Library
-          key: Library-WebGL-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          key: Library-WebGL
           restore-keys: |
-            Library-WebGL-
             Library-
 
-      # Modify Unity build parameters to handle compression differently
-      - name: Build WebGL
+      - name: Unity - Builder
         uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
           targetPlatform: WebGL
           buildName: Build
-          versioning: Semantic
-          customParameters: >-
-            -quit 
-            -batchmode 
-            -nographics 
-            -WebGLCompressionFormat Disabled
+          buildsPath: build
 
-      # Create a custom configuration file in the Unity template directory
-      - name: Add compression handling
-        working-directory: build/WebGL/Build
-        run: |
-          # Create .nojekyll file to prevent GitHub Pages from ignoring files that begin with an underscore
-          touch .nojekyll
-
-          # Create headers.json for GitHub Pages
-          cat > _headers << EOF
-          /*
-            Content-Encoding: gzip
-          /*.gz
-            Content-Type: application/javascript
-            Content-Encoding: gzip
-          EOF
-
-      # Modify the existing index.html to handle compression correctly
-      - name: Update index.html
-        working-directory: build/WebGL/Build
-        run: |
-          # Create a temporary file with the new content
-          cat > index.html.new << EOF
-          <!DOCTYPE html>
-          <html lang="en-us">
-            <head>
-              <meta charset="utf-8">
-              <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-              <title>Unity WebGL Player</title>
-              <script>
-                // Handle gzipped files
-                window.unityInstance = null;
-                function handleGzipFiles() {
-                  return createUnityInstance(document.querySelector("#unity-canvas"), {
-                    dataUrl: "Build.data",
-                    frameworkUrl: "Build.framework.js",
-                    codeUrl: "Build.wasm",
-                    streamingAssetsUrl: "StreamingAssets",
-                    companyName: "DefaultCompany",
-                    productName: "WebGL Build",
-                    productVersion: "0.1",
-                  }).then((instance) => {
-                    window.unityInstance = instance;
-                  });
-                }
-              </script>
-            </head>
-            <body style="margin: 0; padding: 0; overflow: hidden;">
-              <canvas id="unity-canvas" style="width: 100vw; height: 100vh; background: #231F20"></canvas>
-              <script src="Build.loader.js"></script>
-              <script>
-                document.addEventListener("DOMContentLoaded", handleGzipFiles);
-              </script>
-            </body>
-          </html>
-          EOF
-
-          # Replace the existing index.html with the new version
-          mv index.html.new index.html
-
-      - name: List build directory
-        run: |
-          echo "Build directory contents:"
-          ls -la build/WebGL/Build/
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+      - name: Upload Build Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: Build-WebGL
-          path: build/WebGL
-          retention-days: 1
+          path: build/WebGL/Build
 
   deploy:
     needs: build
-    name: Deploy to GitHub Pages
     runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v3
-        with:
-          name: Build-WebGL
-          path: build
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/Build
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
