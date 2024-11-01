@@ -42,11 +42,17 @@ jobs:
           buildName: Build
           versioning: Semantic
 
-      # Create custom web server configuration
-      - name: Create web.config
+      # Ensure directories exist and set permissions
+      - name: Create and prepare directories
         run: |
-          cat > build/WebGL/Build/web.config << 'EOL'
-          <?xml version="1.0" encoding="UTF-8"?>
+          mkdir -p build/WebGL/Build
+          chmod -R 755 build
+
+      # Create server configurations with proper permissions
+      - name: Create server configurations
+        run: |
+          # Create web.config
+          echo '<?xml version="1.0" encoding="UTF-8"?>
           <configuration>
             <system.webServer>
               <staticContent>
@@ -66,14 +72,10 @@ jobs:
                 </rules>
               </rewrite>
             </system.webServer>
-          </configuration>
-          EOL
+          </configuration>' > build/WebGL/Build/web.config
 
-      # Create .htaccess for Apache servers
-      - name: Create .htaccess
-        run: |
-          cat > build/WebGL/Build/.htaccess << 'EOL'
-          AddEncoding gzip .gz
+          # Create .htaccess
+          echo 'AddEncoding gzip .gz
           AddType application/gzip .gz
 
           RewriteEngine On
@@ -84,28 +86,15 @@ jobs:
           <FilesMatch "\.gz$">
             Header set Content-Encoding "gzip"
             Header set Content-Type "application/javascript"
-          </FilesMatch>
-          EOL
+          </FilesMatch>' > build/WebGL/Build/.htaccess
 
-      # Create custom index.html with proper headers
-      - name: Create index.html
-        run: |
-          cat > build/WebGL/Build/index.html << 'EOL'
-          <!DOCTYPE html>
+          # Create custom index.html
+          echo '<!DOCTYPE html>
           <html lang="en-us">
             <head>
               <meta charset="utf-8">
               <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
               <title>Unity WebGL Player</title>
-              <script>
-                // Add content encoding headers for gzipped files
-                if (typeof WebAssembly === 'object') {
-                  var script = document.createElement('script');
-                  script.src = "Build.framework.js.gz";
-                  script.type = "application/javascript";
-                  document.body.appendChild(script);
-                }
-              </script>
             </head>
             <body style="margin: 0px; overflow: hidden;">
               <canvas id="unity-canvas" style="width: 100%; height: 100%; background: #231F20"></canvas>
@@ -122,8 +111,17 @@ jobs:
                 });
               </script>
             </body>
-          </html>
-          EOL
+          </html>' > build/WebGL/Build/index.html
+
+          # Set proper permissions for all created files
+          chmod 644 build/WebGL/Build/web.config
+          chmod 644 build/WebGL/Build/.htaccess
+          chmod 644 build/WebGL/Build/index.html
+
+      - name: List build directory
+        run: |
+          echo "Build directory contents:"
+          ls -la build/WebGL/Build/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
