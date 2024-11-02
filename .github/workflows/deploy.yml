@@ -31,11 +31,14 @@ jobs:
           targetPlatform: WebGL
           buildsPath: build
 
+      - name: List build directory
+        run: ls -R build/
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v3
         with:
           name: WebGL-Build
-          path: build/WebGL/WebGL
+          path: build/WebGL
 
   deploy:
     name: Deploy to GitHub Pages
@@ -72,18 +75,17 @@ jobs:
           name: WebGL-Build
           path: .
 
-      - name: List files for debugging
-        run: ls -la
-
-      - name: Clean and move files
+      - name: List downloaded files
         run: |
-          # Remove existing directories if they exist
-          rm -rf Build TemplateData
+          echo "Current directory contents:"
+          ls -la
+          echo "WebGL directory contents (if exists):"
+          ls -la WebGL || echo "WebGL directory not found"
 
-          # Move files from WebGL directory
+      - name: Move files to root
+        run: |
           if [ -d "WebGL" ]; then
-            # Move all files and directories from WebGL to root
-            mv WebGL/* .
+            cp -r WebGL/* .
             rm -rf WebGL
           fi
 
